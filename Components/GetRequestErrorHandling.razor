@@ -1,0 +1,29 @@
+@inject HttpClient HttpClient
+
+<div class="card text-center m-3">
+    <h5 class="card-header">GET Request with Error Handling</h5>
+    <div class="card-body">
+        Error: @errorMessage
+    </div>
+</div>
+
+@code {
+    private UsersResponse response;
+    private string errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var httpResponse = await HttpClient.GetAsync("https://reqres.in/invalid-url");
+
+        if (!httpResponse.IsSuccessStatusCode)
+        {
+            // set error message for display, log to console and return
+            errorMessage = httpResponse.ReasonPhrase;
+            Console.WriteLine($"There was an error! {errorMessage}");
+            return;
+        }
+
+        // convert http response data to UsersResponse object
+        response = await httpResponse.Content.ReadFromJsonAsync<UsersResponse>();
+    }
+}

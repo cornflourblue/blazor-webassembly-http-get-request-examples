@@ -1,0 +1,21 @@
+@inject HttpClient HttpClient
+
+<div class="card text-center m-3">
+    <h5 class="card-header">GET Request with dynamic response type</h5>
+    <div class="card-body">
+        Total users: @total
+    </div>
+</div>
+
+@code {
+    private int? total;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // convert response data to JsonElement which can handle any JSON data
+        var data = await HttpClient.GetFromJsonAsync<JsonElement>("https://reqres.in/api/users");
+        
+        // get total property from JSON response data
+        total = data.GetProperty("total").GetInt32();
+    }
+}

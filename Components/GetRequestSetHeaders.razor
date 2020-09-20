@@ -1,0 +1,30 @@
+@inject HttpClient HttpClient
+
+<div class="card text-center m-3">
+    <h5 class="card-header">GET request with headers set</h5>
+    <div class="card-body">
+        Total users: @response?.Total
+    </div>
+</div>
+
+@code {
+    private UsersResponse response;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // create request object
+        var request = new HttpRequestMessage(HttpMethod.Get, "https://reqres.in/api/users");
+
+        // add authorization header
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "my-token");
+
+        // add custom http header
+        request.Headers.Add("My-Custom-Header", "foobar");
+
+        // send request
+        using var httpResponse = await HttpClient.SendAsync(request);
+
+        // convert http response data to UsersResponse object
+        response = await httpResponse.Content.ReadFromJsonAsync<UsersResponse>();
+    }
+}
